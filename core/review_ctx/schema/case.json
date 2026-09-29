@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://review-squad.dev/schema/case.json",
+  "title": "Evaluation case",
+  "description": "A labelled change (base..head over a fixture) with the findings a reviewer is expected, and not expected, to report.",
+  "type": "object",
+  "required": [
+    "id",
+    "category",
+    "stack",
+    "mode",
+    "fixture",
+    "base",
+    "head",
+    "source",
+    "expected",
+    "must_not",
+    "adversarial"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "category": { "enum": ["bug", "negative", "pre_existing", "adversarial"] },
+    "stack": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "mode": { "enum": ["pr", "local"] },
+    "fixture": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "base": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "head": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "source": { "type": "string", "pattern": "^(synthetic|public|own):.+$" },
+    "tier_expected": { "enum": ["XS", "S", "M", "L", "XL"] },
+    "expected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["lens", "sev", "loc"],
+        "additionalProperties": false,
+        "properties": {
+          "lens": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "sev": { "enum": ["important", "nit", "pre_existing", "question"] },
+          "loc": { "$ref": "#/$defs/loc" },
+          "tol": { "type": "integer", "minimum": 0, "maximum": 20 },
+          "must_cite": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^.+:[1-9][0-9]*$" },
+            "uniqueItems": true
+          },
+          "claim_hint": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "optional": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["loc", "claim_hint"],
+        "additionalProperties": false,
+        "properties": {
+          "loc": { "$ref": "#/$defs/loc" },
+          "claim_hint": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "must_not": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "f": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 },
+          "pattern": { "type": "string", "minLength": 1 }
+        },
+        "oneOf": [{ "required": ["f", "reason"] }, { "required": ["pattern"] }]
+      }
+    },
+    "adversarial": { "type": "boolean" },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "loc": {
+      "type": "object",
+      "required": ["f", "l"],
+      "additionalProperties": false,
+      "properties": {
+        "f": { "type": "string", "minLength": 1 },
+        "l": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    }
+  }
+}

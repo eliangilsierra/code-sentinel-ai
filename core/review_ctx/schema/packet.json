@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://review-squad.dev/schema/packet.json",
+  "title": "Packet",
+  "description": "Minimal sufficient context for a review run: changed files, enclosing scopes, tool signals, repository rules and the job plan.",
+  "type": "object",
+  "required": ["run", "tier", "stack", "files", "hunks", "tools", "rules", "jobs"],
+  "additionalProperties": false,
+  "properties": {
+    "run": { "type": "string", "pattern": "^[a-z0-9]+$" },
+    "tier": { "enum": ["XS", "S", "M", "L", "XL"] },
+    "stack": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "uniqueItems": true
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["p", "st", "+", "-", "tags"],
+        "additionalProperties": false,
+        "properties": {
+          "p": { "type": "string", "minLength": 1 },
+          "st": { "enum": ["A", "M", "D", "R"] },
+          "+": { "type": "integer", "minimum": 0 },
+          "-": { "type": "integer", "minimum": 0 },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "hunks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "p", "scope", "l", "code"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^h[0-9]+$" },
+          "p": { "type": "string", "minLength": 1 },
+          "scope": { "type": "string" },
+          "l": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 1 },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "code": { "type": "string" }
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "rules": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "lens", "hunks"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^j[0-9]+$" },
+          "lens": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "hunks": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^h[0-9]+$" },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "why": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
