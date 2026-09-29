@@ -9,8 +9,10 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from review_ctx import __version__
+from review_ctx.gate import Policy, PolicyError, run_gate
 from review_ctx.ledger import Ledger, LedgerError
 from review_ctx.repo import RepoError, repo_root, run_dir
+from review_ctx.report import FORMATS, render
 from review_ctx.show import render_finding
 
 EXIT_REJECTED = 1
@@ -40,6 +42,12 @@ def build_parser() -> argparse.ArgumentParser:
     verdict.add_argument("verdict", choices=("confirmed", "refuted", "unverifiable"))
     verdict.add_argument("--sev", default=None, help="adjusted severity")
     verdict.add_argument("--note", default="", help="reason, at most 120 characters")
+    gate = with_run("gate", "decide which findings are published")
+    gate.add_argument("--policy", type=Path, default=None, help="gate policy file")
+    report = with_run("report", "render the findings that passed the gate")
+    report.add_argument("--policy", type=Path, default=None, help="gate policy file")
+    report.add_argument("--format", choices=FORMATS, default="terminal")
+    report.add_argument("--out", type=Path, default=None, help="write the report to a file")
     return parser
 
 
@@ -74,7 +82,29 @@ def _verdict(args: argparse.Namespace) -> int:
     return 0
 
 
-HANDLERS = {"emit": _emit, "show": _show, "verdict": _verdict}
+def _gate(args: argparse.Namespace) -> int:
+    result = run_gate(_open_ledger(args), Policy.load(args.policy))
+    print(json.dumps(result.counts(), sort_keys=True))
+    return 0
+
+
+def _report(args: argparse.Namespace) -> int:
+    result = run_gate(_open_ledger(args), Policy.load(args.policy))
+    text = render(result, args.format)
+    if args.out is None:
+        sys.stdout.write(text)
+    else:
+        args.out.write_text(text, encoding="utf-8")
+    return 0
+
+
+HANDLERS = {
+    "emit": _emit,
+    "show": _show,
+    "verdict": _verdict,
+    "gate": _gate,
+    "report": _report,
+}
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -85,7 +115,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_USAGE
     try:
         return HANDLERS[args.command](args)
-    except (RepoError, LedgerError) as error:
+    except (RepoError, LedgerError, PolicyError) as error:
         print(f"error: {error}", file=sys.stderr)
         return EXIT_USAGE
 
