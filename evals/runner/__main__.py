@@ -13,6 +13,14 @@ import yaml
 from evals.runner.budget import DEFAULT_LEDGER, Budget, BudgetError
 from evals.runner.fixtures import FixtureError, FixtureIndex, bundle_path, materialize
 from evals.runner.lint import collect_case_files, lint_files
+from evals.runner.report import (
+    FAIL,
+    compare,
+    load_summary,
+    regression_verdict,
+    render_comparison,
+    render_run,
+)
 
 COMMANDS = ("run", "judge", "report", "calibrate", "case-lint", "materialize", "budget")
 NOT_IMPLEMENTED = 3
@@ -59,6 +67,22 @@ def _budget(args: argparse.Namespace) -> int:
     return 0
 
 
+def _report(args: argparse.Namespace) -> int:
+    try:
+        current = load_summary(args.run)
+        reference = load_summary(args.compare) if args.compare else None
+    except ValueError as error:
+        print(f"report: {error}", file=sys.stderr)
+        return 2
+    print(render_run(current))
+    if reference is None:
+        return 0
+    comparison = compare(current, reference)
+    level, reasons = regression_verdict(comparison)
+    print(render_comparison(comparison, level, reasons))
+    return 1 if level == FAIL else 0
+
+
 def _find_case(reference: str, cases_dir: Path) -> Path | None:
     candidate = Path(reference)
     if candidate.is_file():
@@ -94,6 +118,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             sub.add_argument("paths", nargs="*", type=Path)
             sub.add_argument("--fixtures-dir", type=Path, default=None)
             sub.set_defaults(handler=_case_lint)
+        elif name == "report":
+            sub.add_argument("run", type=Path)
+            sub.add_argument("--compare", type=Path, default=None)
+            sub.set_defaults(handler=_report)
         elif name == "budget":
             sub.add_argument("--file", type=Path, default=DEFAULT_LEDGER)
             sub.add_argument("--init", type=float, default=None, metavar="LIMIT_USD")
