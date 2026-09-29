@@ -11,6 +11,8 @@ from typing import Any
 import yaml
 from review_ctx.schemas import validation_errors
 
+from evals.runner.fixtures import FixtureError
+
 LineCounter = Callable[[str], int | None]
 
 
@@ -118,7 +120,12 @@ def lint_files(
         if problem is not None:
             issues.append(LintIssue(path, problem))
             continue
-        counter = line_counter_for(data) if line_counter_for and _is_plain_case(data) else None
+        counter = None
+        if line_counter_for is not None and _is_plain_case(data):
+            try:
+                counter = line_counter_for(data)
+            except FixtureError as error:
+                issues.append(LintIssue(path, str(error)))
         issues += [LintIssue(path, message) for message in lint_case(data, counter)]
         case_id = data.get("id") if isinstance(data, dict) else None
         if isinstance(case_id, str):
