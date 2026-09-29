@@ -1,0 +1,40 @@
+[project]
+name = "review-squad"
+version = "0.0.1"
+description = "Evidence-gated AI code review: deterministic context preparation, cited findings, mechanical gate."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+    "jsonschema>=4.21",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+review-ctx = "review_ctx.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["core/review_ctx"]
+
+[tool.pytest.ini_options]
+testpaths = ["core/tests", "evals/tests"]
+pythonpath = [".", "core"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["spikes"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
