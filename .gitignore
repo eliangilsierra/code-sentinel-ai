@@ -7,9 +7,7 @@ dist/
 build/
 *.egg-info/
 
-evals/reports/**
-!evals/reports/**/summary.json
-!evals/reports/budget.json
+evals/reports/
 evals/.claude-config/
 
 spikes/**/out/
