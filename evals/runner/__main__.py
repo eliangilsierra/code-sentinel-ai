@@ -11,6 +11,7 @@ from pathlib import Path
 import yaml
 
 from evals.runner.budget import DEFAULT_LEDGER, Budget, BudgetError
+from evals.runner.cli_run import configure_run, run_command
 from evals.runner.fixtures import FixtureError, FixtureIndex, bundle_path, materialize
 from evals.runner.lint import collect_case_files, lint_files
 from evals.runner.report import (
@@ -118,6 +119,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             sub.add_argument("paths", nargs="*", type=Path)
             sub.add_argument("--fixtures-dir", type=Path, default=None)
             sub.set_defaults(handler=_case_lint)
+        elif name == "run":
+            configure_run(sub)
+            sub.set_defaults(handler=run_command)
         elif name == "report":
             sub.add_argument("run", type=Path)
             sub.add_argument("--compare", type=Path, default=None)
