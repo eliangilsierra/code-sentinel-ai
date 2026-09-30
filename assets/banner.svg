@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
-  <title id="title">review-squad</title>
+  <title id="title">code-sentinel</title>
   <desc id="desc">Evidence-gated code review for Claude Code</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -30,7 +30,7 @@
     <path d="M24 44l12 12 24-26" fill="none" stroke="#0b1020" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 
-  <text x="184" y="132" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="62" font-weight="700" fill="#f8fafc" letter-spacing="-1">review-squad</text>
+  <text x="184" y="132" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="62" font-weight="700" fill="#f8fafc" letter-spacing="-1">code-sentinel</text>
   <text x="186" y="176" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="26" fill="#cbd5e1">Evidence-gated code review for Claude Code</text>
 
   <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" fill="#e2e8f0">

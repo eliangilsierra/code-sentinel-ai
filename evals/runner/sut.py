@@ -1,4 +1,4 @@
-"""Systems under test: review-squad and the reference reviewer, driven through ``claude -p``."""
+"""Systems under test: code-sentinel and the reference reviewer, driven through ``claude -p``."""
 
 from __future__ import annotations
 
@@ -92,10 +92,10 @@ def finding_from_entry(entry: dict[str, Any]) -> Finding:
     )
 
 
-class ReviewSquadSut:
-    """The review-squad plugin, run through its review skill."""
+class CodeSentinelSut:
+    """The code-sentinel plugin, run through its review skill."""
 
-    name = "review-squad"
+    name = "code-sentinel"
 
     def __init__(self, config: SutConfig) -> None:
         self.config = config
@@ -105,7 +105,7 @@ class ReviewSquadSut:
         command = [
             *config.claude,
             "-p",
-            "/review-squad:review",
+            "/code-sentinel:review",
             "--output-format",
             "json",
             "--permission-mode",
@@ -150,7 +150,7 @@ class ReviewSquadSut:
 
 def latest_run(repo: Path) -> str | None:
     """Id of the most recently modified run of ``repo``, or ``None`` if there is none."""
-    runs = repo / ".git" / "review-squad" / "runs"
+    runs = repo / ".git" / "code-sentinel" / "runs"
     if not runs.is_dir():
         return None
     directories = [path for path in runs.iterdir() if path.is_dir()]

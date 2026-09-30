@@ -97,7 +97,7 @@ def test_manifest_and_marketplace_agree() -> None:
     manifest = json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text("utf-8"))
     market = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text("utf-8"))
     (entry,) = market["plugins"]
-    assert entry["name"] == manifest["name"] == "review-squad"
+    assert entry["name"] == manifest["name"] == "code-sentinel"
     assert (ROOT / entry["source"] / ".claude-plugin" / "plugin.json").is_file()
     assert manifest["version"]
 
@@ -105,7 +105,7 @@ def test_manifest_and_marketplace_agree() -> None:
 def test_launcher_is_a_posix_script_with_unix_line_endings() -> None:
     data = (PLUGIN / "bin" / "review-ctx").read_bytes()
     assert data.startswith(b"#!/bin/sh\n") and b"\r" not in data
-    assert b"REVIEW_SQUAD_CORE" in data and b"uvx" in data
+    assert b"CODE_SENTINEL_CORE" in data and b"uvx" in data
 
 
 WORKFLOW = PLUGIN / "workflows" / "rs-review.js"
@@ -129,7 +129,7 @@ def test_workflow_uses_the_documented_primitives_and_both_agents() -> None:
     code = WORKFLOW.read_text(encoding="utf-8")
     for primitive in ("phase(", "pipeline(", "agent("):
         assert primitive in code
-    assert "review-squad:rs-finder" in code and "review-squad:rs-verifier" in code
+    assert "code-sentinel:rs-finder" in code and "code-sentinel:rs-verifier" in code
     assert "review-ctx emit" in code and "review-ctx verdict" in code
 
 

@@ -25,7 +25,7 @@ EXIT_ABANDONED = 3
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="review-ctx",
-        description="Deterministic context, evidence ledger and gate for review-squad.",
+        description="Deterministic context, evidence ledger and gate for code-sentinel.",
     )
     parser.add_argument("--version", action="version", version=f"review-ctx {__version__}")
     commands = parser.add_subparsers(dest="command", metavar="<command>")

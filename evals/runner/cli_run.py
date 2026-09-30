@@ -19,15 +19,15 @@ from evals.runner.run import (
     pending_cases,
     run_suite,
 )
-from evals.runner.sut import CodeReviewSut, ReviewSquadSut, SutConfig
+from evals.runner.sut import CodeReviewSut, CodeSentinelSut, SutConfig
 
-SUTS = ("review-squad", "code-review-medium")
-DEFAULT_ESTIMATES = {"review-squad": 0.15, "code-review-medium": 0.25}
+SUTS = ("code-sentinel", "code-review-medium")
+DEFAULT_ESTIMATES = {"code-sentinel": 0.15, "code-review-medium": 0.25}
 
 
 def configure_run(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--suite", required=True, help="suite name, 'all' or a case id glob")
-    parser.add_argument("--sut", choices=SUTS, default="review-squad")
+    parser.add_argument("--sut", choices=SUTS, default="code-sentinel")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--claude", default="claude", help="command that starts Claude Code")
     parser.add_argument("--plugin-dir", type=Path, default=Path("adapters/claude"))
@@ -47,8 +47,8 @@ def configure_run(parser: argparse.ArgumentParser) -> None:
 
 
 def build_sut(name: str, config: SutConfig) -> Sut:
-    if name == "review-squad":
-        return ReviewSquadSut(config)
+    if name == "code-sentinel":
+        return CodeSentinelSut(config)
     return CodeReviewSut(config)
 
 

@@ -1,6 +1,6 @@
 ---
 name: review
-description: Evidence-gated review of the current branch or of a git range. Use as /review-squad:review [base...head].
+description: Evidence-gated review of the current branch or of a git range. Use as /code-sentinel:review [base...head].
 disable-model-invocation: true
 allowed-tools: Bash(review-ctx *) Workflow(rs-review)
 ---

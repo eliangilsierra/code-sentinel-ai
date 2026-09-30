@@ -28,7 +28,7 @@ def _run(name: str, rows: list[tuple[int, int, int]], cost: float = 0.1, **extra
         CaseRecord(f"case-{i:03d}", "bug", tp, fp, fn, cost, **extra)
         for i, (tp, fp, fn) in enumerate(rows)
     ]
-    return RunSummary(run=name, sut="review-squad", cases=cases)
+    return RunSummary(run=name, sut="code-sentinel", cases=cases)
 
 
 def test_point_estimate_is_the_difference_of_summed_f05() -> None:
@@ -145,7 +145,7 @@ def test_summary_round_trips_through_disk(tmp_path: Path) -> None:
     write_summary(tmp_path / "run-1", summary, [])
     loaded = load_summary(tmp_path / "run-1")
     assert loaded.cases == sorted(summary.cases, key=lambda c: c.case_id)
-    assert loaded.evidence_validity == 1.0 and loaded.sut == "review-squad"
+    assert loaded.evidence_validity == 1.0 and loaded.sut == "code-sentinel"
 
 
 def test_loading_a_missing_or_malformed_summary_fails(tmp_path: Path) -> None:

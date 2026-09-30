@@ -1,1 +1,1 @@
-"""Evaluation harness for review-squad."""
+"""Evaluation harness for code-sentinel."""

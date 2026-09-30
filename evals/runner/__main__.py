@@ -98,7 +98,7 @@ def _materialize(args: argparse.Namespace) -> int:
         print(f"materialize: case not found: {args.case}", file=sys.stderr)
         return 2
     case = yaml.safe_load(case_file.read_text(encoding="utf-8"))
-    dest = args.dest or Path(tempfile.mkdtemp(prefix="review-squad-")) / "repo"
+    dest = args.dest or Path(tempfile.mkdtemp(prefix="code-sentinel-")) / "repo"
     try:
         materialize(
             bundle_path(args.fixtures_dir, case["fixture"]), case["base"], case["head"], dest

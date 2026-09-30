@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://review-squad.dev/schema/packet.json",
+  "$id": "https://code-sentinel.dev/schema/packet.json",
   "title": "Packet",
   "description": "Minimal sufficient context for a review run: changed files, enclosing scopes, tool signals, repository rules and the job plan.",
   "type": "object",

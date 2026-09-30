@@ -13,7 +13,7 @@ from pathlib import Path
 from types import TracebackType
 from typing import Any
 
-MARKER = "review-squad-fixture"
+MARKER = "code-sentinel-fixture"
 REVIEW_BRANCH = "review"
 BASE_REF = "refs/remotes/origin/review-base"
 
@@ -59,7 +59,7 @@ def materialize(bundle: Path, base: str, head: str, dest: Path) -> Path:
 @contextmanager
 def materialized(bundle: Path, base: str, head: str) -> Iterator[Path]:
     """Materialize into a temporary directory that is removed on exit."""
-    root = Path(tempfile.mkdtemp(prefix="review-squad-"))
+    root = Path(tempfile.mkdtemp(prefix="code-sentinel-"))
     try:
         yield materialize(bundle, base, head, root / "repo")
     finally:
@@ -123,7 +123,7 @@ class FixtureIndex:
             if not bundle.is_file():
                 raise FixtureError(f"fixture bundle not found: {bundle}")
             if self._root is None:
-                self._root = Path(tempfile.mkdtemp(prefix="review-squad-index-"))
+                self._root = Path(tempfile.mkdtemp(prefix="code-sentinel-index-"))
             target = self._root / f"{fixture}.git"
             _git(self._root, "clone", "--bare", "--quiet", str(bundle), str(target))
             self._clones[fixture] = target

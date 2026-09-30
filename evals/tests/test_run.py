@@ -22,7 +22,7 @@ from evals.runner.run import (
 )
 from evals.runner.sut import (
     CodeReviewSut,
-    ReviewSquadSut,
+    CodeSentinelSut,
     SutConfig,
     finding_from_entry,
     latest_run,
@@ -61,7 +61,7 @@ if os.environ.get("FAKE_FAIL"):
     sys.exit(1)
 if "--json-schema" in args:
     out(structured_output=json.loads(os.environ["FAKE_EXTRACTED"]), result="")
-elif prompt.startswith("/review-squad:review"):
+elif prompt.startswith("/code-sentinel:review"):
     core = [sys.executable, "-m", "review_ctx.cli"]
     subprocess.run(core + ["prepare", "--id", "a1f3"], check=True, capture_output=True)
     finding = json.loads(os.environ["FAKE_FINDING"])
@@ -194,11 +194,11 @@ def test_error_result_counts_as_a_failure(tmp_path: Path) -> None:
     assert result.returncode == 0 and result.failed and result.message == "limit"
 
 
-def test_review_squad_sut_collects_the_published_findings(
+def test_code_sentinel_sut_collects_the_published_findings(
     shop_fixture: Fixture, tmp_path: Path, fake_claude: list[str]
 ) -> None:
     repo = materialize(shop_fixture.bundle, shop_fixture.base, shop_fixture.head, tmp_path / "r")
-    sut = ReviewSquadSut(SutConfig(claude=fake_claude))
+    sut = CodeSentinelSut(SutConfig(claude=fake_claude))
     outcome = sut.run(repo, _case(shop_fixture))
     assert outcome.error is None
     assert [(f.f, f.start, f.end, f.sev, f.lens) for f in outcome.findings] == [
@@ -208,10 +208,10 @@ def test_review_squad_sut_collects_the_published_findings(
     assert latest_run(repo) == "a1f3"
 
 
-def test_review_squad_command_uses_the_plugin_and_the_budget_cap() -> None:
+def test_code_sentinel_command_uses_the_plugin_and_the_budget_cap() -> None:
     config = SutConfig(plugin_dir=Path("/plugins/rs"), cap_usd=0.25, effort="low")
-    command = ReviewSquadSut(config).command()
-    assert command[:3] == ["claude", "-p", "/review-squad:review"]
+    command = CodeSentinelSut(config).command()
+    assert command[:3] == ["claude", "-p", "/code-sentinel:review"]
     assert command[command.index("--max-budget-usd") + 1] == "0.25"
     assert command[command.index("--plugin-dir") + 1] == str(Path("/plugins/rs"))
     assert command[command.index("--permission-mode") + 1] == "dontAsk"
@@ -231,13 +231,13 @@ def test_failed_review_records_the_error_and_no_findings(
 ) -> None:
     monkeypatch.setenv("FAKE_FAIL", "1")
     repo = materialize(shop_fixture.bundle, shop_fixture.base, shop_fixture.head, tmp_path / "r")
-    outcome = ReviewSquadSut(SutConfig(claude=fake_claude)).run(repo, _case(shop_fixture))
+    outcome = CodeSentinelSut(SutConfig(claude=fake_claude)).run(repo, _case(shop_fixture))
     assert outcome.error == "usage limit reached" and outcome.findings == []
 
 
 def test_latest_run_is_none_without_runs(tmp_path: Path) -> None:
     assert latest_run(tmp_path) is None
-    (tmp_path / ".git" / "review-squad" / "runs").mkdir(parents=True)
+    (tmp_path / ".git" / "code-sentinel" / "runs").mkdir(parents=True)
     assert latest_run(tmp_path) is None
 
 
@@ -326,7 +326,7 @@ def test_invalid_case_files_are_rejected(tmp_path: Path) -> None:
 def test_suite_run_scores_cases_and_writes_the_summary(
     workspace: dict[str, Path], tmp_path: Path, fake_claude: list[str]
 ) -> None:
-    sut = ReviewSquadSut(SutConfig(claude=fake_claude))
+    sut = CodeSentinelSut(SutConfig(claude=fake_claude))
     result = run_suite(_options(workspace), sut)
     assert result.errors == [] and len(result.scores) == 2
     metrics = json.loads((result.directory / "summary.json").read_text(encoding="utf-8"))
@@ -356,7 +356,7 @@ def test_a_finding_far_from_the_expected_location_is_a_false_positive(
     strict["expected"][0]["tol"] = 0
     _write(workspace["cases"] / "java", strict)
     monkeypatch.setenv("FAKE_FINDING", json.dumps(STRAY_FINDING))
-    result = run_suite(_options(workspace, "ws"), ReviewSquadSut(SutConfig(claude=fake_claude)))
+    result = run_suite(_options(workspace, "ws"), CodeSentinelSut(SutConfig(claude=fake_claude)))
     (record,) = result.summary.cases
     assert (record.tp, record.fp, record.fn) == (0, 1, 1)
 
@@ -364,7 +364,7 @@ def test_a_finding_far_from_the_expected_location_is_a_false_positive(
 def test_stored_outcomes_are_reused_unless_forced(
     workspace: dict[str, Path], tmp_path: Path, fake_claude: list[str]
 ) -> None:
-    sut = ReviewSquadSut(SutConfig(claude=fake_claude))
+    sut = CodeSentinelSut(SutConfig(claude=fake_claude))
     run_suite(_options(workspace), sut)
     assert _calls(tmp_path) == 2
     again = run_suite(_options(workspace), sut)
@@ -382,7 +382,7 @@ def test_failed_cases_are_reported_not_scored_and_retried_later(
     fake_claude: list[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    sut = ReviewSquadSut(SutConfig(claude=fake_claude))
+    sut = CodeSentinelSut(SutConfig(claude=fake_claude))
     monkeypatch.setenv("FAKE_FAIL", "1")
     failed = run_suite(_options(workspace, "ws"), sut)
     assert failed.scores == [] and [c for c, _ in failed.errors] == ["shop-001"]
@@ -427,7 +427,7 @@ def test_cli_charges_the_budget_and_prints_the_summary(
     Budget(limit_usd=100).save(ledger)
     assert _cli(workspace, fake_claude, "--budget-file", str(ledger)) == 0
     output = capsys.readouterr().out
-    assert "run r9  sut review-squad  cases 2" in output and "F0.5 1.000" in output
+    assert "run r9  sut code-sentinel  cases 2" in output and "F0.5 1.000" in output
     assert Budget.load(ledger).spent_usd > 0
 
 

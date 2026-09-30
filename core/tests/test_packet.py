@@ -324,13 +324,13 @@ def test_cli_prepare_prints_the_summary(
     packs_dir: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    monkeypatch.setenv("REVIEW_SQUAD_PACKS", str(packs_dir))
-    monkeypatch.setenv("REVIEW_SQUAD_LENSES", str(lenses))
+    monkeypatch.setenv("CODE_SENTINEL_PACKS", str(packs_dir))
+    monkeypatch.setenv("CODE_SENTINEL_LENSES", str(lenses))
     monkeypatch.setattr("sys.stdin", io.StringIO(""))
     _edit(service_repo, ("        return order;", "        return order; // checked"))
     assert main(["prepare", "--repo", str(service_repo), "--id", "h8"]) == 0
     out = capsys.readouterr().out
-    assert out.startswith("review-squad run h8: tier XS") and "PLAN {" in out
+    assert out.startswith("code-sentinel run h8: tier XS") and "PLAN {" in out
 
 
 def test_cli_prepare_reports_bad_ranges(
@@ -340,7 +340,7 @@ def test_cli_prepare_reports_bad_ranges(
     packs_dir: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    monkeypatch.setenv("REVIEW_SQUAD_PACKS", str(packs_dir))
-    monkeypatch.setenv("REVIEW_SQUAD_LENSES", str(lenses))
+    monkeypatch.setenv("CODE_SENTINEL_PACKS", str(packs_dir))
+    monkeypatch.setenv("CODE_SENTINEL_LENSES", str(lenses))
     assert main(["prepare", "nope...HEAD", "--repo", str(service_repo)]) == 2
     assert "error:" in capsys.readouterr().err
