@@ -1,0 +1,41 @@
+max_nits: 5
+tools:
+  - semgrep
+  - ast-grep
+  - gitleaks
+  - osv-scanner
+  - tsc
+  - eslint
+  - ruff
+  - mypy
+  - pyright
+  - javac
+  - errorprone
+  - spotbugs
+trusted_tools:
+  - gitleaks
+  - tsc
+  - javac
+severity_rules:
+  important:
+    E3: publish
+    E2: publish
+    E1: degrade
+    E0: drop
+  nit:
+    E3: publish
+    E2: publish
+    E1: publish_if_unverified
+    E0: drop
+  pre_existing:
+    E3: publish
+    E2: publish
+    E1: drop
+    E0: drop
+  question:
+    E3: hold
+    E2: hold
+    E1: hold
+    E0: drop
+blocked_cells: []
+ignore_paths: []
