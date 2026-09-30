@@ -4,7 +4,7 @@ from evals.runner.__main__ import NOT_IMPLEMENTED, main
 
 
 def test_unimplemented_command_does_not_report_success() -> None:
-    assert main(["run", "--suite", "smoke"]) == NOT_IMPLEMENTED
+    assert main(["judge", "--run", "x"]) == NOT_IMPLEMENTED
 
 
 def test_unknown_command_is_rejected() -> None:
