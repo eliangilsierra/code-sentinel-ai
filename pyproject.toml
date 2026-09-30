@@ -1,5 +1,5 @@
 [project]
-name = "review-squad"
+name = "code-sentinel"
 version = "0.0.1"
 description = "Evidence-gated AI code review: deterministic context preparation, cited findings, mechanical gate."
 readme = "README.md"

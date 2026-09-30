@@ -15,8 +15,8 @@ import yaml
 
 from review_ctx.gitdiff import FileChange, git
 
-PACKS_ENV = "REVIEW_SQUAD_PACKS"
-LENSES_ENV = "REVIEW_SQUAD_LENSES"
+PACKS_ENV = "CODE_SENTINEL_PACKS"
+LENSES_ENV = "CODE_SENTINEL_LENSES"
 UNIVERSAL = "_universal"
 MAX_CONTAINS_FILES = 5
 MAX_CONTAINS_BYTES = 200_000
@@ -87,7 +87,7 @@ def _packs_base(env: str, folder: str) -> Path:
 
 
 def packs_dir() -> Path:
-    """Directory holding the packs: ``$REVIEW_SQUAD_PACKS``, the checkout or the installed copy."""
+    """Directory holding the packs: ``$CODE_SENTINEL_PACKS``, the checkout or the installed copy."""
     return _packs_base(PACKS_ENV, "packs")
 
 

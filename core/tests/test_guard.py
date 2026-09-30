@@ -11,7 +11,7 @@ from review_ctx.guard import decide, hook_output, is_guarded
 CWD = "C:/work/repo"
 
 
-def _event(tool: str, agent: str = "review-squad:rs-finder", **tool_input: Any) -> dict[str, Any]:
+def _event(tool: str, agent: str = "code-sentinel:rs-finder", **tool_input: Any) -> dict[str, Any]:
     return {"tool_name": tool, "tool_input": tool_input, "agent_type": agent, "cwd": CWD}
 
 
@@ -145,15 +145,15 @@ def test_every_other_tool_is_denied(tool: str) -> None:
 
 
 def test_verifier_is_guarded_too() -> None:
-    assert not decide(_bash("curl x", agent="review-squad:rs-verifier")).allowed
+    assert not decide(_bash("curl x", agent="code-sentinel:rs-verifier")).allowed
 
 
 @pytest.mark.parametrize(
     ("agent", "guarded"),
     [
         ("rs-finder", True),
-        ("review-squad:rs-finder", True),
-        ("review-squad:rs-verifier", True),
+        ("code-sentinel:rs-finder", True),
+        ("code-sentinel:rs-verifier", True),
         ("Explore", False),
         ("my-rs-finder-fork", False),
         ("", False),

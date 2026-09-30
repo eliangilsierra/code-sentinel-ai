@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://review-squad.dev/schema/case.json",
+  "$id": "https://code-sentinel.dev/schema/case.json",
   "title": "Evaluation case",
   "description": "A labelled change (base..head over a fixture) with the findings a reviewer is expected, and not expected, to report.",
   "type": "object",

@@ -1,9 +1,9 @@
 #!/bin/sh
-# Launcher for the review-squad core: an explicit command, the source checkout, then uvx.
+# Launcher for the code-sentinel core: an explicit command, the source checkout, then uvx.
 here=$(cd "$(dirname "$0")" && pwd)
 
-if [ -n "$REVIEW_SQUAD_CORE" ]; then
-  exec "$REVIEW_SQUAD_CORE" "$@"
+if [ -n "$CODE_SENTINEL_CORE" ]; then
+  exec "$CODE_SENTINEL_CORE" "$@"
 fi
 
 checkout="$here/../../.."
@@ -12,9 +12,9 @@ if [ -f "$checkout/pyproject.toml" ] && command -v uv >/dev/null 2>&1; then
 fi
 
 if command -v uvx >/dev/null 2>&1; then
-  exec uvx --quiet --from review-squad review-ctx "$@"
+  exec uvx --quiet --from code-sentinel review-ctx "$@"
 fi
 
-echo "review-ctx: the review-squad core was not found." >&2
-echo "Install uv (https://docs.astral.sh/uv/) or set REVIEW_SQUAD_CORE to the review-ctx command." >&2
+echo "review-ctx: the code-sentinel core was not found." >&2
+echo "Install uv (https://docs.astral.sh/uv/) or set CODE_SENTINEL_CORE to the review-ctx command." >&2
 exit 127

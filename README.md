@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="review-squad: evidence-gated code review for Claude Code" width="100%">
+  <img src="assets/banner.svg" alt="code-sentinel: evidence-gated code review for Claude Code" width="100%">
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="#why-review-squad">Why</a> ·
+  <a href="#why-code-sentinel">Why</a> ·
   <a href="#how-it-works">How it works</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#evidence-tiers">Evidence tiers</a> ·
@@ -25,11 +25,11 @@
 
 ---
 
-## Why review-squad
+## Why code-sentinel
 
 AI reviewers tend to fail in the same ways: findings without evidence, generic advice, false
 positives that cost a reviewer's time, and agents that read far more code than the change needs.
-review-squad is built around the opposite rules.
+code-sentinel is built around the opposite rules.
 
 | | |
 |---|---|
@@ -76,7 +76,7 @@ flowchart LR
 ### Example output
 
 ```text
-review-squad: 1 important, 0 pre-existing, 1 nit
+code-sentinel: 1 important, 0 pre-existing, 1 nit
 (held as questions: 1; discarded: 3; nits over the cap: 0)
 
 IMPORTANT  src/main/java/shop/OrderController.java:48-55  [security, E2]
@@ -113,12 +113,12 @@ claude --plugin-dir /path/to/code-sentinel-ai/adapters/claude
 Then run the review:
 
 ```text
-/review-squad:review                  # current branch and local changes
-/review-squad:review main...feature   # an explicit range
+/code-sentinel:review                  # current branch and local changes
+/code-sentinel:review main...feature   # an explicit range
 ```
 
 The plugin launcher runs the core from the checkout with `uv run`. To use another installation of
-the core, set `REVIEW_SQUAD_CORE` to the `review-ctx` command.
+the core, set `CODE_SENTINEL_CORE` to the `review-ctx` command.
 
 You can also run the deterministic part on its own, without any model:
 
@@ -127,7 +127,7 @@ uv run review-ctx prepare main...feature
 ```
 
 It prints a short summary and writes the packet and the job files under
-`.git/review-squad/runs/<id>/`.
+`.git/code-sentinel/runs/<id>/`.
 
 ## Evidence tiers
 
@@ -200,8 +200,8 @@ Cases live in `evals/cases` and fixture bundles in `evals/fixtures`.
 ```bash
 uv run python -m evals.runner case-lint --fixtures-dir evals/fixtures
 uv run python -m evals.runner budget --init 100
-uv run python -m evals.runner run --suite <suite> --sut review-squad
-uv run python -m evals.runner report evals/reports/<run>/review-squad --compare <baseline>
+uv run python -m evals.runner run --suite <suite> --sut code-sentinel
+uv run python -m evals.runner report evals/reports/<run>/code-sentinel --compare <baseline>
 ```
 
 ## Security model
@@ -221,7 +221,7 @@ The repository under review is untrusted input.
 
 ## Status
 
-review-squad is **pre-release**.
+code-sentinel is **pre-release**.
 
 | Component | State |
 |---|---|

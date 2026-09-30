@@ -264,7 +264,7 @@ def summarize(packet: dict[str, Any], plan: Plan, excluded: list[tuple[str, str]
     removed = sum(f["-"] for f in files)
     jobs = ", ".join(f"{j['id']} {j['lens']}" for j in packet["jobs"]) or "none"
     lines = [
-        f"review-squad run {packet['run']}: tier {packet['tier']}, {len(files)} file(s) "
+        f"code-sentinel run {packet['run']}: tier {packet['tier']}, {len(files)} file(s) "
         f"(+{added} -{removed}), stack {', '.join(packet['stack']) or 'unknown'}",
         f"jobs: {jobs}. excluded files: {len(excluded)}.",
     ]

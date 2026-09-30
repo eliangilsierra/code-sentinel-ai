@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://review-squad.dev/schema/finding.json",
+  "$id": "https://code-sentinel.dev/schema/finding.json",
   "title": "Finding",
   "description": "A review candidate emitted by a finder. Every claim must be backed by literal citations.",
   "type": "object",

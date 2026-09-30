@@ -248,7 +248,7 @@ def test_terminal_report_lists_findings_with_evidence(ledger: Ledger) -> None:
     add(ledger, 5, verdict="confirmed")
     add(ledger, 3, sev="nit")
     text = _run_report(ledger, "terminal")
-    assert text.startswith("review-squad: 1 important, 0 pre-existing, 1 nit")
+    assert text.startswith("code-sentinel: 1 important, 0 pre-existing, 1 nit")
     assert "IMPORTANT  src/OrderController.java:5  [security, E2]" in text
     assert "evidence: src/OrderController.java:5  return repo.findById(id);" in text
     assert "fix: Apply the documented fix" in text
@@ -344,7 +344,7 @@ def test_cli_report_defaults_to_the_terminal_format(
 ) -> None:
     add(ledger, 5, verdict="confirmed")
     assert _cli(monkeypatch, repo, "report") == 0
-    assert capsys.readouterr().out.startswith("review-squad: 1 important")
+    assert capsys.readouterr().out.startswith("code-sentinel: 1 important")
 
 
 def test_cli_reports_a_broken_policy_file(

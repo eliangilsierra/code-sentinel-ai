@@ -49,7 +49,7 @@ def _evidence(decision: Decision) -> list[str]:
 
 
 def _terminal(result: GateResult) -> str:
-    lines = [f"review-squad: {_summary(result)}", f"({_footer(result)})", ""]
+    lines = [f"code-sentinel: {_summary(result)}", f"({_footer(result)})", ""]
     for severity, label in SECTIONS:
         for decision in (d for d in result.published if d.sev == severity):
             finding = decision.finding

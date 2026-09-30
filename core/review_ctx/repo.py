@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 RUN_ID = re.compile(r"^[a-z0-9]+$")
-STATE_DIR = "review-squad"
+STATE_DIR = "code-sentinel"
 
 
 class RepoError(Exception):

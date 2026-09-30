@@ -1,5 +1,5 @@
 {
-  "name": "review-squad",
+  "name": "code-sentinel",
   "version": "0.0.1",
   "description": "Evidence-gated code review: deterministic context, cited findings and a mechanical publication gate.",
   "author": {

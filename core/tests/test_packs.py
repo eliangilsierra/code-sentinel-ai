@@ -108,8 +108,8 @@ def test_shipped_packs_load_with_the_universal_pack_first() -> None:
 def test_directories_can_be_overridden_with_environment_variables(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    monkeypatch.setenv("REVIEW_SQUAD_PACKS", str(tmp_path / "p"))
-    monkeypatch.setenv("REVIEW_SQUAD_LENSES", str(tmp_path / "l"))
+    monkeypatch.setenv("CODE_SENTINEL_PACKS", str(tmp_path / "p"))
+    monkeypatch.setenv("CODE_SENTINEL_LENSES", str(tmp_path / "l"))
     assert packs_dir() == tmp_path / "p" and lenses_dir() == tmp_path / "l"
 
 

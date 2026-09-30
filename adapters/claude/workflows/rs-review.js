@@ -65,9 +65,9 @@ phase('find')
 const found = await pipeline(jobs, (job) =>
   agent(
     `RUN=${run} JOB=${job.id}\n` +
-      `Read .git/review-squad/runs/${run}/jobs/${job.id}.md and follow it. ` +
+      `Read .git/code-sentinel/runs/${run}/jobs/${job.id}.md and follow it. ` +
       `Record every candidate with review-ctx emit --run ${run}.`,
-    { label: job.id, agentType: 'review-squad:rs-finder', schema: finderResult },
+    { label: job.id, agentType: 'code-sentinel:rs-finder', schema: finderResult },
   ),
 )
 
@@ -89,7 +89,7 @@ const verdicts = await pipeline(selected, (finding) =>
   agent(
     `RUN=${run}\nVerify finding ${finding.id}: run review-ctx show --run ${run} ${finding.id}, ` +
       'try to refute it and record the verdict with review-ctx verdict.',
-    { label: finding.id, agentType: 'review-squad:rs-verifier', schema: verifierResult },
+    { label: finding.id, agentType: 'code-sentinel:rs-verifier', schema: verifierResult },
   ),
 )
 

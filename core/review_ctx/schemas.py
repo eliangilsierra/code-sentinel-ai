@@ -1,4 +1,4 @@
-"""Loading and validation of the JSON Schemas that define review-squad data contracts."""
+"""Loading and validation of the JSON Schemas that define code-sentinel data contracts."""
 
 from __future__ import annotations
 
