@@ -69,7 +69,7 @@
         "additionalProperties": false,
         "properties": {
           "id": { "type": "string", "pattern": "^j[0-9]+$" },
-          "lens": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "lens": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(\\+[a-z][a-z0-9-]*)*$" },
           "hunks": {
             "type": "array",
             "items": { "type": "string", "pattern": "^h[0-9]+$" },

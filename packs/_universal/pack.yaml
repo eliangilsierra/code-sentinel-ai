@@ -1,0 +1,16 @@
+id: _universal
+always:
+  - correctness
+triggers:
+  - added: '(?i)\b(password|passwd|secret|api[_-]?key|token)\b\s*[:=]\s*["'']?[^\s"'']{6,}'
+    tags: [secret]
+    lenses: [security]
+  - added: '\b(eval|exec|execSync|popen|system)\s*\(|Runtime\s*\.\s*getRuntime|ProcessBuilder|child_process'
+    tags: [command-exec]
+    lenses: [security]
+  - added: '(?i)\b(md5|sha-?1|des|rc4)\b'
+    tags: [weak-crypto]
+    lenses: [security]
+  - paths: ['**/*.sql', '**/migrations/**', '**/migration/**']
+    tags: [migration]
+    lenses: [data-migration]
