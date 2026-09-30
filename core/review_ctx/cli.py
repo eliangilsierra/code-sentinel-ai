@@ -11,6 +11,7 @@ from pathlib import Path
 from review_ctx import __version__
 from review_ctx.gate import Policy, PolicyError, run_gate
 from review_ctx.ledger import Ledger, LedgerError
+from review_ctx.packet import PrepareError, prepare
 from review_ctx.repo import RepoError, repo_root, run_dir
 from review_ctx.report import FORMATS, render
 from review_ctx.show import render_finding
@@ -34,6 +35,10 @@ def build_parser() -> argparse.ArgumentParser:
         command.add_argument("--repo", type=Path, default=None, help="repository path")
         return command
 
+    prep = commands.add_parser("prepare", help="prepare the review context of a change")
+    prep.add_argument("range", nargs="?", default=None, help="base...head; default: local changes")
+    prep.add_argument("--repo", type=Path, default=None, help="repository path")
+    prep.add_argument("--id", default=None, help="run id to use")
     with_run("emit", "record a finding read as JSON from standard input")
     show = with_run("show", "print a finding with its citations and code")
     show.add_argument("id")
@@ -54,6 +59,12 @@ def build_parser() -> argparse.ArgumentParser:
 def _open_ledger(args: argparse.Namespace) -> Ledger:
     root = repo_root(args.repo)
     return Ledger(run_dir(root, args.run, create=args.command == "emit"), root)
+
+
+def _prepare(args: argparse.Namespace) -> int:
+    result = prepare(repo_root(args.repo), args.range, run=args.id)
+    print(result.summary)
+    return 0
 
 
 def _emit(args: argparse.Namespace) -> int:
@@ -99,6 +110,7 @@ def _report(args: argparse.Namespace) -> int:
 
 
 HANDLERS = {
+    "prepare": _prepare,
     "emit": _emit,
     "show": _show,
     "verdict": _verdict,
@@ -115,7 +127,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_USAGE
     try:
         return HANDLERS[args.command](args)
-    except (RepoError, LedgerError, PolicyError) as error:
+    except (RepoError, LedgerError, PolicyError, PrepareError) as error:
         print(f"error: {error}", file=sys.stderr)
         return EXIT_USAGE
 
