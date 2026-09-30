@@ -10,6 +10,7 @@ from pathlib import Path
 
 import yaml
 
+from evals.runner.budget import DEFAULT_LEDGER, Budget, BudgetError
 from evals.runner.fixtures import FixtureError, FixtureIndex, bundle_path, materialize
 from evals.runner.lint import collect_case_files, lint_files
 
@@ -35,6 +36,27 @@ def _case_lint(args: argparse.Namespace) -> int:
         print(issue)
     print(f"case-lint: {len(files)} case(s) checked, {len(issues)} issue(s)")
     return 1 if issues else 0
+
+
+def _budget(args: argparse.Namespace) -> int:
+    try:
+        if args.init is not None:
+            if args.file.exists():
+                print(f"budget: ledger already exists: {args.file}", file=sys.stderr)
+                return 2
+            Budget(limit_usd=args.init).save(args.file)
+        budget = Budget.load(args.file)
+        if args.record is not None:
+            budget.record(args.record[0], float(args.record[1]))
+            budget.save(args.file)
+    except (BudgetError, ValueError) as error:
+        print(f"budget: {error}", file=sys.stderr)
+        return 2
+    print(
+        f"limit ${budget.limit_usd:.2f}  spent ${budget.spent_usd:.2f}  "
+        f"remaining ${budget.remaining_usd:.2f}"
+    )
+    return 0
 
 
 def _find_case(reference: str, cases_dir: Path) -> Path | None:
@@ -72,6 +94,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             sub.add_argument("paths", nargs="*", type=Path)
             sub.add_argument("--fixtures-dir", type=Path, default=None)
             sub.set_defaults(handler=_case_lint)
+        elif name == "budget":
+            sub.add_argument("--file", type=Path, default=DEFAULT_LEDGER)
+            sub.add_argument("--init", type=float, default=None, metavar="LIMIT_USD")
+            sub.add_argument("--record", nargs=2, default=None, metavar=("RUN", "USD"))
+            sub.set_defaults(handler=_budget)
         elif name == "materialize":
             sub.add_argument("case")
             sub.add_argument("--dest", type=Path, default=None)
