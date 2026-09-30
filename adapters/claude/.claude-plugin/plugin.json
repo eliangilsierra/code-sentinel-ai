@@ -1,0 +1,10 @@
+{
+  "name": "review-squad",
+  "version": "0.0.1",
+  "description": "Evidence-gated code review: deterministic context, cited findings and a mechanical publication gate.",
+  "author": {
+    "name": "Elian Gil Sierra"
+  },
+  "license": "GPL-3.0-only",
+  "keywords": ["code-review", "review", "security"]
+}

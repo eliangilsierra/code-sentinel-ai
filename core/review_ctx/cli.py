@@ -10,6 +10,7 @@ from pathlib import Path
 
 from review_ctx import __version__
 from review_ctx.gate import Policy, PolicyError, run_gate
+from review_ctx.guard import decide, hook_output
 from review_ctx.ledger import Ledger, LedgerError
 from review_ctx.packet import PrepareError, prepare
 from review_ctx.repo import RepoError, repo_root, run_dir
@@ -35,6 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
         command.add_argument("--repo", type=Path, default=None, help="repository path")
         return command
 
+    commands.add_parser("guard", help="apply the read-only policy to a PreToolUse hook event")
     prep = commands.add_parser("prepare", help="prepare the review context of a change")
     prep.add_argument("range", nargs="?", default=None, help="base...head; default: local changes")
     prep.add_argument("--repo", type=Path, default=None, help="repository path")
@@ -59,6 +61,17 @@ def build_parser() -> argparse.ArgumentParser:
 def _open_ledger(args: argparse.Namespace) -> Ledger:
     root = repo_root(args.repo)
     return Ledger(run_dir(root, args.run, create=args.command == "emit"), root)
+
+
+def _guard(args: argparse.Namespace) -> int:
+    try:
+        event = json.loads(sys.stdin.read())
+    except json.JSONDecodeError:
+        return 0
+    decision = decide(event) if isinstance(event, dict) else None
+    if decision is not None:
+        print(hook_output(decision))
+    return 0
 
 
 def _prepare(args: argparse.Namespace) -> int:
@@ -110,6 +123,7 @@ def _report(args: argparse.Namespace) -> int:
 
 
 HANDLERS = {
+    "guard": _guard,
     "prepare": _prepare,
     "emit": _emit,
     "show": _show,
