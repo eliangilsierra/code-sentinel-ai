@@ -4,14 +4,19 @@ from __future__ import annotations
 
 import argparse
 import sys
+import tempfile
 from collections.abc import Sequence
 from pathlib import Path
 
+import yaml
+
+from evals.runner.fixtures import FixtureError, FixtureIndex, bundle_path, materialize
 from evals.runner.lint import collect_case_files, lint_files
 
 COMMANDS = ("run", "judge", "report", "calibrate", "case-lint", "materialize", "budget")
 NOT_IMPLEMENTED = 3
 DEFAULT_CASES_DIR = Path("evals/cases")
+DEFAULT_FIXTURES_DIR = Path("evals/fixtures")
 
 
 def _case_lint(args: argparse.Namespace) -> int:
@@ -21,11 +26,41 @@ def _case_lint(args: argparse.Namespace) -> int:
         print(f"case-lint: path not found: {missing[0]}", file=sys.stderr)
         return 2
     files = collect_case_files(paths)
-    issues = lint_files(files)
+    if args.fixtures_dir is None:
+        issues = lint_files(files)
+    else:
+        with FixtureIndex(args.fixtures_dir) as index:
+            issues = lint_files(files, index.line_counter_for)
     for issue in issues:
         print(issue)
     print(f"case-lint: {len(files)} case(s) checked, {len(issues)} issue(s)")
     return 1 if issues else 0
+
+
+def _find_case(reference: str, cases_dir: Path) -> Path | None:
+    candidate = Path(reference)
+    if candidate.is_file():
+        return candidate
+    matches = sorted(cases_dir.rglob(f"{reference}.yaml")) if cases_dir.is_dir() else []
+    return matches[0] if matches else None
+
+
+def _materialize(args: argparse.Namespace) -> int:
+    case_file = _find_case(args.case, args.cases_dir)
+    if case_file is None:
+        print(f"materialize: case not found: {args.case}", file=sys.stderr)
+        return 2
+    case = yaml.safe_load(case_file.read_text(encoding="utf-8"))
+    dest = args.dest or Path(tempfile.mkdtemp(prefix="review-squad-")) / "repo"
+    try:
+        materialize(
+            bundle_path(args.fixtures_dir, case["fixture"]), case["base"], case["head"], dest
+        )
+    except FixtureError as error:
+        print(f"materialize: {error}", file=sys.stderr)
+        return 2
+    print(dest)
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -35,7 +70,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         sub = subcommands.add_parser(name)
         if name == "case-lint":
             sub.add_argument("paths", nargs="*", type=Path)
+            sub.add_argument("--fixtures-dir", type=Path, default=None)
             sub.set_defaults(handler=_case_lint)
+        elif name == "materialize":
+            sub.add_argument("case")
+            sub.add_argument("--dest", type=Path, default=None)
+            sub.add_argument("--fixtures-dir", type=Path, default=DEFAULT_FIXTURES_DIR)
+            sub.add_argument("--cases-dir", type=Path, default=DEFAULT_CASES_DIR)
+            sub.set_defaults(handler=_materialize)
         else:
             sub.add_argument("options", nargs="*")
     args, _ = parser.parse_known_args(argv)
