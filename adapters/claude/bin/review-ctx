@@ -1,0 +1,20 @@
+#!/bin/sh
+# Launcher for the review-squad core: an explicit command, the source checkout, then uvx.
+here=$(cd "$(dirname "$0")" && pwd)
+
+if [ -n "$REVIEW_SQUAD_CORE" ]; then
+  exec "$REVIEW_SQUAD_CORE" "$@"
+fi
+
+checkout="$here/../../.."
+if [ -f "$checkout/pyproject.toml" ] && command -v uv >/dev/null 2>&1; then
+  exec uv run --quiet --project "$checkout" review-ctx "$@"
+fi
+
+if command -v uvx >/dev/null 2>&1; then
+  exec uvx --quiet --from review-squad review-ctx "$@"
+fi
+
+echo "review-ctx: the review-squad core was not found." >&2
+echo "Install uv (https://docs.astral.sh/uv/) or set REVIEW_SQUAD_CORE to the review-ctx command." >&2
+exit 127

@@ -26,6 +26,10 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["core/review_ctx"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"packs" = "review_ctx/packs"
+"lenses" = "review_ctx/lenses"
+
 [tool.pytest.ini_options]
 testpaths = ["core/tests", "evals/tests"]
 pythonpath = [".", "core"]

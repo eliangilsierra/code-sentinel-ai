@@ -1,0 +1,14 @@
+{
+  "name": "review-squad",
+  "description": "Evidence-gated code review for Claude Code",
+  "owner": {
+    "name": "Elian Gil Sierra"
+  },
+  "plugins": [
+    {
+      "name": "review-squad",
+      "source": "./adapters/claude",
+      "description": "Evidence-gated code review: deterministic context, cited findings and a mechanical publication gate."
+    }
+  ]
+}

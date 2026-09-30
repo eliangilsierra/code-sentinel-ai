@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://review-squad.dev/schema/finding.json",
+  "title": "Finding",
+  "description": "A review candidate emitted by a finder. Every claim must be backed by literal citations.",
+  "type": "object",
+  "required": ["lens", "sev", "loc", "claim", "trigger", "trace"],
+  "additionalProperties": false,
+  "properties": {
+    "lens": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "sev": {
+      "enum": ["important", "nit", "pre_existing", "question"]
+    },
+    "loc": {
+      "type": "object",
+      "required": ["f", "l"],
+      "additionalProperties": false,
+      "properties": {
+        "f": { "type": "string", "minLength": 1 },
+        "l": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+    "claim": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "trigger": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "trace": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["f", "l", "q"],
+        "additionalProperties": false,
+        "properties": {
+          "f": { "type": "string", "minLength": 1 },
+          "l": { "type": "integer", "minimum": 1 },
+          "q": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "why": { "type": "string", "maxLength": 80 }
+        }
+      }
+    },
+    "fix": { "type": "string", "maxLength": 200 },
+    "src": { "type": "string" }
+  }
+}
